@@ -1,0 +1,314 @@
+---
+title: "ev02.Rmd"
+author: "Marcela Hernández Ramírez"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Parte 1 
+
+### Link del video: https://youtu.be/zICe68aoQAs
+
+### Información del video y referencias utilizadas: 
+
+1. Virus similares a SARS-CoV-2:
+No se han identificado virus idénticos a SARS-CoV-2 en el mundo. Sin embargo, existen otros coronavirus que están relacionados genéticamente con SARS-CoV-2, como el SARS-CoV y el MERS-CoV. Además, se han identificado coronavirus similares en murciélagos y pangolines, que se consideran posibles reservorios naturales del virus.
+
+Referencias:
+- Zhou P, Yang XL, Wang XG, Hu B, Zhang L, Zhang W, et al. A pneumonia outbreak associated with a new coronavirus of probable bat origin. Nature. 2020;579(7798):270-3.
+- Hu B, Zeng LP, Yang XL, Ge XY, Zhang W, Li B, et al. Discovery of a rich gene pool of bat SARS-related coronaviruses provides new insights into the origin of SARS coronavirus. PLoS Pathog. 2017;13(11):e1006698.
+- Drosten C, Günther S, Preiser W, van der Werf S, Brodt HR, Becker S, et al. Identification of a novel coronavirus in patients with severe acute respiratory syndrome. N Engl J Med. 2003;348(20):1967-76.
+
+2. Coronavirus reportados en otras especies:
+Se han reportado coronavirus similares a SARS-CoV-2 en murciélagos, pangolines y otros animales. En particular, se han identificado varios coronavirus relacionados con SARS-CoV-2 en murciélagos del género Rhinolophus en diferentes países de Asia.
+
+Referencias:
+- Zhou P, Yang XL, Wang XG, Hu B, Zhang L, Zhang W, et al. A pneumonia outbreak associated with a new coronavirus of probable bat origin. Nature. 2020;579(7798):270-3.
+- Lam TT, Shum MH, Zhu HC, Tong YG, Ni XB, Liao YS, et al. Identification of 2019-nCoV related coronaviruses in Malayan pangolins in southern China. bioRxiv. 2020 Jan 20:2020.02.13.945485.
+
+3. Propuestas para comunidades de bajos recursos:
+Es importante abordar la contingencia del SARS-CoV-2 de manera integral, considerando las necesidades y recursos específicos de cada comunidad. Algunas propuestas podrían incluir:
+
+- Acceso a información clara y actualizada sobre la enfermedad y las medidas de prevención.
+- Distribución de equipo de protección personal y suministros de higiene, como mascarillas, guantes, gel desinfectante, y agua y jabón.
+- Apoyo para implementar medidas de distanciamiento social y aislamiento en caso de infección.
+- Fortalecimiento del sistema de salud local, incluyendo capacitación de personal y suministros médicos adecuados.
+- Apoyo para la implementación de programas de vigilancia epidemiológica y rastreo de contactos para identificar y controlar brotes.
+
+Si yo viviera en una situación de escasos recursos, trataría de implementar las medidas de prevención y cuidado recomendadas por las autoridades sanitarias, como el uso de mascarillas, el lavado frecuente de manos y el distanciamiento social. También buscaría información clara y confiable sobre la enfermedad y las medidas de prevención, y buscaría apoyo.
+
+
+## Parte 2
+
+### 1. Analizar las secuencias de SARS-CoV-2 reportadas en los 20 países con más casos reportados. Y puedes tratar de responder a la pregunta: ¿Son muy diferentes las variantes entre cada país? ¿Es diferente el SARS-CoV-2 entre las diferentes poblaciones: Asiática, Hispana, Europea o Africana?
+
+```{r}
+
+library(Biostrings)
+library(seqinr)
+
+usa <- read.fasta("usa.fasta")
+
+india <- read.fasta("india.fasta")
+  
+brazil <- read.fasta("brazil.fasta")
+  
+rusia <- read.fasta("rusia.fasta")
+
+uk <- read.fasta("UK.fasta")
+
+turquia <- read.fasta("turquia.fasta")
+  
+francia <- read.fasta("francia.fasta")
+  
+italia <- read.fasta("italia.fasta")
+  
+argentina <- read.fasta("argentina.fasta")
+
+mexico <- read.fasta("mexico.fasta")
+
+polonia <- read.fasta("polonia.fasta")
+  
+sudafrica <- read.fasta("sudafrica.fasta")
+  
+españa <- read.fasta("españa.fasta")
+
+japon <- read.fasta("japon.fasta")
+
+colombia <- read.fasta("colombia.fasta")
+  
+peru <- read.fasta("peru.fasta")
+  
+filipinas <- read.fasta("filipinas.fasta")
+
+china <- read.fasta("china.fasta")
+
+alemania <- read.fasta("alemania.fasta")
+
+indonesia <- read.fasta("indonesia.fasta")
+
+variantes <- list(usa, india, brazil, rusia, uk, turquia, francia, italia, argentina, mexico, polonia, sudafrica, españa, japon, colombia, peru, filipinas, china, alemania, indonesia)
+```
+
+### 2. Calcula la longitud de las secuencias.
+
+```{r}
+
+names(variantes)<- c("usa","india","brazil","rusia","uk","turquia","francia","italia","argentina","mexico","polonia","sudafrica","españa","japon","colombia","peru","filipinas","china","alemania","indonesia")
+
+longitud <- function(variante)
+{
+  length(variante[[1]])
+}
+
+virus <- lapply(variantes, longitud)
+virus
+
+```
+### 3. Crea una sola gráfica donde se comparen el número de bases de ADN que componen todas las variantes del virus. 
+
+```{r}
+contar <- function(variantes)
+  {
+    count(variantes[[1]],1)
+}
+virus <- lapply(variantes,contar)
+virus
+```
+```{r} 
+library(ggplot2)
+
+virus <- lapply(variantes, longitud)
+nucleotidos <- c("A", "C", "G", "T")
+
+counts <- lapply(variantes, contar)
+counts_df <- data.frame(Virus = rep(names(counts), each = 4),
+                        Nucleotido = rep(nucleotidos, times = length(counts)),
+                        Frecuencia = unlist(counts))
+
+ggplot(counts_df, aes(x = Virus, y = Frecuencia, fill = Nucleotido)) +
+  geom_col(position = "dodge") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+
+La gráfica muestra la frecuencia relativa de los cuatro nucleótidos (A, C, G y T) en las secuencias del SARS-CoV-2 reportadas en los 20 países analizados. Podemos observar que la frecuencia relativa de los nucleótidos varía entre las diferentes secuencias, pero en general, A y T son los nucleótidos más frecuentes en todas las secuencias, mientras que C y G son menos frecuentes. No se observan diferencias drásticas en la frecuencia relativa de los nucleótidos entre los diferentes países.
+
+```{r} 
+virus <- c("OQ869426", "OQ701269", "OQ690998", "MT510747", "FR995676", "MT327745","HG993784","MT528235", "MW553294", "MT810757", "MT576645", "MT324062", "MT198651","LC529905", "MT256924", "MT263074","MT919770","NC_045512","MT270103", "MZ026853")
+```
+
+```{r} 
+library(adegenet)
+library(ape)
+library(viridis)
+library(ggplot2)
+library(ggtree)
+library(DECIPHER)
+```
+
+```{r}
+virus_sequences <- read.GenBank(virus)
+```
+
+```{r}
+str(virus_sequences)
+```
+```{r}
+attributes(virus_sequences)
+names(virus_sequences)
+attr(virus_sequences, "species")
+```
+
+```{r}
+write.dna(virus_sequences,  file ="virus_seqs.fasta", format = "fasta", append =
+FALSE, nbcol = 6, colsep = " ", colw = 10)
+```
+
+```{r}
+virus_seq_not_align <- readDNAStringSet("virus_seqs.fasta", format = "fasta")
+virus_seq_not_align
+```
+
+```{r}
+virus_seq_not_align <- OrientNucleotides(virus_seq_not_align)
+
+virus_seq_align <- AlignSeqs(virus_seq_not_align)
+```
+```{r}
+BrowseSeqs(virus_seq_align, highlight=0)
+```
+
+
+
+El resultado de `BrowseSeqs(virus_seq_align, highlight=0)` es una visualización de las secuencias de virus del SARS-CoV-2 alineadas. La visualización muestra las secuencias en una tabla, donde cada fila representa una secuencia y cada columna representa una posición en la secuencia. Los caracteres en las celdas corresponden a los nucleótidos o aminoácidos en esa posición. Si `highlight=0`, significa que no se ha destacado ninguna posición en particular.
+
+La visualización permite una inspección detallada de las similitudes y diferencias entre las secuencias de virus del SARS-CoV-2 alineadas, lo que puede ser útil para identificar mutaciones, variantes y patrones evolutivos. También es posible destacar una o varias posiciones específicas en la visualización para enfatizarlas, lo que puede ser útil para centrarse en regiones de interés o para identificar patrones específicos de mutación.
+
+```{r}
+writeXStringSet(virus_seq_align, file="virus_seq_align.fasta")
+```
+
+```{r}
+virus_aligned <- read.alignment("virus_seq_align.fasta", format = "fasta")
+```
+
+```{r}
+matriz_distancia <- dist.alignment(virus_aligned, matrix = "similarity")
+```
+
+```{r}
+temp <- as.data.frame(as.matrix(matriz_distancia))
+table.paint(temp, cleg=0, clabel.row=.5, clabel.col=.5) + scale_color_viridis()
+```
+
+
+
+Los chuncks anteriores de código realizan la alineación de secuencias del SARS-CoV-2 (identificado por su número de acceso NCBI: NC_045512). Luego, se calcula una matriz de distancia entre estas secuencias y se grafica en una matriz de calor para visualizar las similitudes entre las secuencias. 
+
+El resultado muestra que muchas secuencias tienen alta similitud con algunas otras, como el virus MZ026853 y el virus OQ690998, mientras que otros tienen baja similitud como el virus MT327745 y el virus FR995676. La matriz de calor también muestra que algunos virus tienen alta similitud entre sí, lo que sugiere que estos virus pueden estar relacionados evolutivamente.
+
+```{r}
+virus_tree <- nj(matriz_distancia)
+class(virus_tree) 
+
+virus_tree <- ladderize(virus_tree)
+```
+
+```{r}
+plot(virus_tree, cex = 0.6)
+title("Different Variants of Coronavirus Around the World")
+```
+
+
+
+La última parte del código construye un árbol filogenético a partir de la matriz de distancia previamente calculada, utilizando el método de Neighbor Joining (NJ) a través de la función `nj()` del paquete `ape`. 
+
+Después, la función `ladderize()` se utiliza para "escalar" el árbol, de tal manera que las ramas más largas se encuentren en la parte inferior y las más cortas en la superior, lo cual puede ayudar a visualizar mejor las relaciones entre las distintas variantes.
+
+Finalmente, la función `plot()` se utiliza para generar una visualización gráfica del árbol filogenético, en la que cada rama representa una distancia evolutiva, y las etiquetas indican la identidad de cada variante del coronavirus. La función `title()` se utiliza para agregar un título a la gráfica.
+
+En términos de análisis, el árbol filogenético permite visualizar la relación evolutiva entre las distintas variantes del coronavirus que se analizaron. La longitud de las ramas indica la distancia evolutiva, lo cual puede dar una idea de cuánto se han divergido las distintas variantes a partir de un ancestro común. Además, la topología del árbol permite identificar agrupaciones de variantes que están más estrechamente relacionadas entre sí, lo cual podría tener implicaciones para la epidemiología y la propagación de la enfermedad.
+
+```{r}
+ggtree(virus_tree, layout="slanted") + geom_tiplab()
+ggtree(virus_tree, layout="circular") + geom_tiplab()
+ggtree(virus_tree, layout="fan", open.angle=0) + geom_tiplab()
+ggtree(virus_tree, layout="equal_angle") + geom_tiplab()
+ggtree(virus_tree, branch.length='none') + geom_tiplab()
+ggtree(virus_tree, branch.length='none', layout='circular') + geom_tiplab()
+ggtree(virus_tree ) + geom_tiplab()
+```
+
+
+
+Estas líneas de código usan la librería `ggtree` para visualizar el árbol filogenético generado previamente a partir de las secuencias de virus. Cada línea de código utiliza un parámetro diferente para modificar el diseño y la apariencia del árbol. A continuación, se explica brevemente cada una de ellas:
+
+- `ggtree(virus_tree)`: visualiza el árbol con un diseño por defecto.
+- `ggtree(virus_tree, layout="slanted")`: cambia el diseño a "slanted", es decir, un árbol con inclinación.
+- `ggtree(virus_tree, layout="circular")`: cambia el diseño a "circular", donde las hojas del árbol se disponen en un círculo.
+- `ggtree(virus_tree, layout="fan", open.angle=120)`: cambia el diseño a "fan", donde las hojas del árbol se disponen en un semicírculo con una apertura de 120 grados.
+- `ggtree(virus_tree, layout="equal_angle")`: cambia el diseño a "equal_angle", donde las ramas del árbol se disponen en ángulos iguales.
+- `ggtree(virus_tree, branch.length='none')`: elimina las longitudes de las ramas del árbol.
+- `ggtree(virus_tree, branch.length='none', layout='circular')`: elimina las longitudes de las ramas y cambia el diseño a "circular".
+- `ggtree(virus_tree) + geom_tiplab()`: añade etiquetas a las hojas del árbol.
+
+En general, estas líneas de código permiten explorar diferentes diseños y opciones para visualizar el árbol filogenético y así facilitar su interpretación. Pueden ser utilizadas al gusto de cada persona.
+
+El último arbol es el utilizado en este documento. 
+```{r}
+BiocManager::install("ggmsa")
+library(ggmsa)
+ggmsa(virus_seq_not_align, 320, 360, color = "Chemistry_AA")
+```
+
+
+
+Este código utiliza la biblioteca `ggmsa` para visualizar una alineación múltiple de secuencias de proteínas de los virus en un gráfico con códigos de colores que representan los diferentes aminoácidos en las posiciones correspondientes de la secuencia. El código utiliza la función `ggmsa()` que toma como entrada la secuencia de proteína no alineada `virus_seq_not_align`, y muestra las posiciones de la 320 a la 360 en la secuencia alineada. Los colores en el gráfico se corresponden con los aminoácidos en cada posición, y la leyenda muestra el esquema de colores utilizado para representar cada aminoácido. Esta visualización es útil para observar las regiones conservadas y variables en las secuencias de proteínas de los diferentes virus.
+
+```{r}
+plot_virus <- ggtree(virus_tree ) + geom_tiplab()
+
+data = tidy_msa(virus_seq_not_align, 164, 213)
+plot_virus + geom_facet(geom = geom_msa, data = data,  panel = 'msa', color = "Chemistry_AA") +
+    xlim_tree(1)
+```
+
+
+
+Este código está utilizando la librería `ggmsa` para visualizar las alineaciones múltiples de secuencias de los diferentes virus y sus posibles variantes. 
+
+La función `tidy_msa()` de la librería `ggmsa` se utiliza para preparar los datos de la alineación múltiple de secuencias para su visualización en un formato que pueda ser utilizado por `ggplot2`. 
+
+Luego, la función `ggtree()` de la librería `ggtree` se utiliza para trazar el árbol filogenético de los diferentes virus. 
+
+Finalmente, `geom_facet()` se utiliza para agregar los paneles de alineación de secuencias y `geom_msa()` se utiliza para representar las alineaciones múltiples de secuencias, con la opción `color = "Chemistry_AA"` para dar color a los aminoácidos de acuerdo a su tipo químico.
+
+En general, el resultado es una figura que muestra la relación filogenética entre los diferentes virus y sus posibles variantes, junto con la visualización de la alineación múltiple de secuencias y la información química de los aminoácidos.
+
+### Análisis general 
+
+Como se puede observar en el código, se cargaron las secuencias de SARS-CoV-2 reportadas en los 20 países con más casos reportados (USA, India, Brasil, Rusia, UK, Turquía, Francia, Italia, Argentina, México, Polonia, Sudáfrica, España, Japón, Colombia, Perú, Filipinas, China, Alemania e Indonesia). 
+
+Para analizar si son muy diferentes las variantes entre cada país, se compararon las secuencias de cada país y se calculó su similitud. En general,las secuencias de SARS-CoV-2 son muy similares entre sí, ya que todas pertenecen a la misma especie viral y comparten un ancestro común. Sin embargo, se han reportado variantes del virus que presentan mutaciones específicas, como la variante británica (B.1.1.7), la variante sudafricana (B.1.351), la variante brasileña (P.1) y la variante india (B.1.617), entre otras. Estas variantes pueden presentaron diferencias significativas en su secuencia genómica y tuvieron implicaciones en la transmisibilidad, la gravedad de la enfermedad y la respuesta a las vacunas y tratamientos.
+
+Respecto a si el SARS-CoV-2 es diferente entre las diferentes poblaciones, como la Asiática, Hispana, Europea o Africana, no se puede determinar simplemente por las secuencias genómicas de cada país. Las poblaciones humanas pueden presentar variaciones genéticas que podrían influir en la interacción entre el virus y su huésped, y en la respuesta inmune. Además, los patrones de propagación del virus pueden variar en cada población debido a factores socioeconómicos, culturales y de salud pública. Es importante destacar que el SARS-CoV-2 puede infectar a personas de cualquier origen étnico o racial, y la prevención y control de la enfermedad depende de medidas de salud pública efectivas y de la cooperación global.
+
+## Conclusiones: 
+
+A partir del análisis realizado, se pueden hacer algunas conclusiones sobre las variantes del virus que se están comparando:
+
+- Existen varias variantes del virus que se están comparando, algunas de ellas identificadas por su número de acceso en la base de datos GenBank: OQ869426, OQ701269, OQ690998, MT510747, FR995676, MT327745, HG993784, MT528235, MW553294, MT810757, MT576645, MT324062, MT198651, LC529905, MT256924, MT263074, MT919770, NC_045512, MT270103, MZ026853.
+
+- Se realizó una comparación de las secuencias de ADN de estas variantes, mediante la construcción de una matriz de distancia y un árbol filogenético, lo que permitió visualizar las relaciones evolutivas entre ellas.
+
+- El árbol filogenético dio como resultado que hay varias ramas que muestran relaciones evolutivas entre las distintas variantes.
+
+- La visualización del árbol filogenético mediante ggplot2 y ggtree permitió generar diferentes tipos de gráficos para facilitar la interpretación de los resultados. Además, se utilizó la librería ggmsa para realizar una alineación múltiple de las secuencias de ADN y visualizar los resultados en relación al árbol filogenético.
+
+- En resumen, el análisis de las secuencias de ADN y la construcción del árbol filogenético permitieron identificar las relaciones evolutivas entre diferentes variantes del virus. Estos resultados pueden tener implicaciones importantes en la comprensión de la epidemiología del virus y en el desarrollo de estrategias para su control.
