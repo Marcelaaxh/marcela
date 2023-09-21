@@ -1,0 +1,198 @@
+---
+title: "Evidencia 1, Análisis Inicial"
+author: "Marcela Hernández Ramírez A01658023"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Evidencia 1 \| Análisis inicial
+
+## Parte 1
+
+### 1. ¿Cuál es la situación actual de COVID-19 a nivel mundial, en México, en tu estado de origen y en tu municipio, alcaldía o colonia?
+
+La situación de COVID-19 a nivel mundial conforme al último dato registrado el 03/10/2023 de la Universidad de John Hopkins es de 676.609.955 casos. En México, según la página oficial del Consejo Nacional de Ciencia y Tecnología, hasta el 18/04/2023 se registraron 7.568.585 casos en todo el país. Con relación a ello, en la Ciudad de México se registraron el 03/10/2023 24.975 casos. Respecto a la alcaldía Tlalpan, los últimos datos recopilados el 07/27/2023 en el sitio oficial del Gobierno de México, indica que hubo 159,455 casos positivos. Por lo que, se puede concluir que en el 2023, gracias a las vacunas y a las medidas de prevención, los casos han bajado drásticamente.
+
+### 2. ¿Cuál fue la primera variante del virus que se propagó a todo el mundo?
+
+La primera variante del virus SARS-CoV-2 que se propagó a todo el mundo es la variante original, que se identificó por primera vez en Wuhan, China a finales de 2019. Esta variante original del virus se denominó comúnmente como la cepa "D614G" debido a una mutación específica en la proteína de espiga del virus.
+
+### 3. ¿Cuáles son las otras variantes del virus que existen en otras regiones del mundo?
+
+**Variante Alfa**: Identificada por primera vez en el Reino Unido en septiembre de 2020. Se ha demostrado que es más transmisible y puede ser más mortal.
+
+**Variante Beta** : Identificada por primera vez en Sudáfrica en mayo de 2020. Se ha demostrado que es más transmisible y puede evadir la respuesta inmunitaria en algunos casos.
+
+**Variante Gamma** : Identificada por primera vez en Brasil en diciembre de 2020. Se ha demostrado que es más transmisible y puede ser más resistente a la respuesta inmunitaria en algunos casos.
+
+**Variante Delta** : Identificada por primera vez en India en diciembre de 2020. Se ha demostrado que es más transmisible y puede ser más resistente a la respuesta inmunitaria en algunos casos.
+
+Además de estas variantes, también se identificaron otras en diferentes regiones del mundo, como la variante Epsilon (California), la variante Zeta (Brasil), la variante Eta (Nigeria), entre otras.
+
+### 4. ¿Cómo buscarías información de la variante del virus en tu país?
+
+Al estar haciendo la investigación, me percaté que las páginas del gobierno de México, Universidades Europeas y Estadounidenses, además de la OMS (Organización Mundial de la Salud) tienen datos respecto a como el COVID-19 se ha propagado a lo largo del territorio mexicano desde que llegó por primera vez al país hasta la actualidad. Me basaría en esas fuentes de información, ya que son confiables y primarias.
+
+### 5. Imagina que te encuentras en una situación similar a la de Li Wenliang, médico chino que intentó alertar sobre el brote de coronavirus en su país, pero fue detenido por las autoridades y obligado a retractarse, ¿qué harías en su caso? Selecciona un inciso:
+
+a)  Lo reportas al centro de investigación o la universidad.
+b)  Lo reportas a la prensa.
+c)  Guardas la información. Elige y justifica tu respuesta.
+
+Yo haría lo que dice el inciso "a", lo reportaría al centro de investigación o a la universidad, hay tener en cuenta la importancia de la ética médica y el compromiso con la salud pública, por lo que considero que lo más responsable es informar a las autoridades sanitarias competentes para poder tomar medidas preventivas y de control.
+
+## Parte 2
+
+### 1. Obtén las secuencias de las variantes de SARS-CoV-2
+
+```{r}
+library(Biostrings)
+library(seqinr)
+
+alpha <- read.fasta("alpha.fasta")
+
+beta <- read.fasta("beta.fasta")
+  
+delta <- read.fasta("delta.fasta")
+  
+omicron <- read.fasta("omicron.fasta")
+  
+variantes <- list(alpha, beta, delta, omicron)
+```
+
+### 2. Calcula la longitud de las secuencias de cada variante.
+
+```{r}
+names(variantes)<- c("Alpha","Beta","Delta","Omicron")
+
+longitud <- function(variante)
+{
+  length(variante[[1]])
+}
+
+virus <- lapply(variantes, longitud)
+virus
+```
+
+### 3. %GC de cada variante
+
+```{r}
+codones <- function(cadena)
+{
+  nucleo <- count(cadena[[1]],1)
+  clotidos <- nucleo/length(cadena[[1]])
+  clotidos[[2]]+clotidos[[3]]
+}
+lapply(variantes,codones)
+```
+
+### 4. Secuencias contrasentido de cada variante y nucleotidos
+
+```{r}
+
+hebra_inversa<-function(hd){
+  hi<-c()
+  cont=1
+  for(i in length(hd):1){
+    hi[cont]<-hd[i]
+    cont=cont+1
+  }
+  return(hi)
+}
+```
+
+### Alpha
+```{r}
+hebra_inversa(variantes$Alpha[[1]])[c(1:5,(length(variantes$Alpha[[1]])-5):length(variantes$Alpha[[1]]))]
+```
+### Beta
+```{r}
+hebra_inversa(variantes$Beta[[1]])[c(1:5,(length(variantes$Beta[[1]])-5):length(variantes$Beta[[1]]))]
+```
+### Delta
+```{r}
+hebra_inversa(variantes$Delta[[1]])[c(1:5,(length(variantes$Delta[[1]])-5):length(variantes$Delta[[1]]))]
+```
+### Omicron
+```{r}
+hebra_inversa(variantes$Omicron[[1]])[c(1:5,(length(variantes$Omicron[[1]])-5):length(variantes$Omicron[[1]]))]
+```
+
+
+```{r}
+contar <- function(variantes)
+  {
+    count(variantes[[1]],1)
+}
+virus <- lapply(variantes,contar)
+virus
+```
+
+### 5. Crea una gráfica donde compares las bases de ADN que componen a cada una de las variantes del virus.
+
+```{r}
+library("ggplot2")
+nuc_Alpha <- c(virus[[1]])
+nuc_Beta <- c(virus[[2]])
+nuc_Delta <- c(virus[[3]])
+nuc_Omnicron <- c(virus[[4]])
+
+tabla <- data.frame(Nucleotido = c("Adenina", "Citosina", "Guanina", "Timina", "Adenina", "Citosina", "Guanina", "Timina", "Adenina", "Citosina", "Guanina", "Timina", "Adenina", "Citosina", "Guanina", "Timina"), Virus = c("Alpha", "Alpha", "Alpha", "Alpha", "Beta", "Beta", "Beta", "Beta", "Delta", "Delta", "Delta", "Delta", "Omnicron", "Omnicron", "Omnicron", "Omnicron"), Frecuencia = c(nuc_Alpha, nuc_Beta, nuc_Delta, nuc_Omnicron))
+
+ggplot(tabla, aes(x=Virus, y=Frecuencia, fill=Nucleotido)) + geom_col(position="dodge")
+```
+
+### 6. Agrega una interpretación escrita de las gráficas que integras.
+
+| Nucleotido | Virus    | Frecuencia |
+|------------|----------|------------|
+| Adenina    | Alpha    | 8903       |
+| Citosina   | Alpha    | 5468       |
+| Guanina    | Alpha    | 5844       |
+| Timina     | Alpha    | 9586       |
+| Adenina    | Beta     | 8819       |
+| Citosina   | Beta     | 5408       |
+| Guanina    | Beta     | 5801       |
+| Timina     | Beta     | 9509       |
+| Adenina    | Delta    | 8315       |
+| Citosina   | Delta    | 5148       |
+| Guanina    | Delta    | 5489       |
+| Timina     | Delta    | 8879       |
+| Adenina    | Omnicron | 8585       |
+| Citosina   | Omnicron | 5255       |
+| Guanina    | Omnicron | 5603       |
+| Timina     | Omnicron | 9229       |
+
+### Para concluir:
+
+Las secuencias variantes del SARS-CoV-2 se pueden obtener de la base de datos del NCBI o de la herramienta de búsqueda de virus del NCBI.
+
+La longitud de las secuencias variantes del SARS-CoV-2 oscila entre aproximadamente 29 000 y 30 000 nucleótidos.
+
+La adenina (A) y la timina (T) son más abundantes que la citosina (C) y la guanina (G) en las secuencias variantes del SARS-CoV-2.
+
+El porcentaje de contenido de G-C de las secuencias variantes del SARS-CoV-2 es de alrededor del 37 % al 38 %, lo que indica un contenido de GC relativamente bajo.
+
+La secuencia inversa del complemento de una variante del SARS-CoV-2 se obtiene leyendo la secuencia original de derecha a izquierda y reemplazando cada base por su complemento.
+
+En general, estos puntos brindan información básica sobre la composición genética de las variantes del SARS-CoV-2, incluida su longitud, composición de nucleótidos, contenido de GC y secuencias inversas del complemento. Estos aspectos de la composición genética de las variantes del SARS-CoV-2 pueden ser importantes para comprender el virus y desarrollar tratamientos y vacunas eficaces.
+
+### Referencias:
+
+BBC News. (2021, 15 de febrero). Coronavirus: ¿Qué se sabe de las variantes sudafricana, británica y brasileña? Recuperado el 19 de abril de 2023, de <https://www.bbc.com/mundo/noticias-55536492>
+
+Centro de Control y Prevención de Enfermedades (CDC). (2021). Clasificaciones de variantes del SARS-CoV-2. Recuperado el 19 de abril de 2023, de <https://espanol.cdc.gov/coronavirus/2019-ncov/variants/variant-classifications.html>
+
+Centro de Control y Prevención de Enfermedades (CDC). (2021). Variantes del virus que causan COVID-19. Recuperado el 19 de abril de 2023, de <https://www.cdc.gov/coronavirus/2019-ncov/variants/index.html>
+
+Consejo Nacional de Ciencia y Tecnología (CONACYT). (2023). Plataforma Datos Abiertos COVID-19. Recuperado el 19 de abril de 2023, de <https://datos.covid-19.conacyt.mx/#DOView>
+
+Johns Hopkins University. (2023). COVID-19 Dashboard by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU). Recuperado el 19 de abril de 2023, de <https://coronavirus.jhu.edu/map.html>
+
+National Center for Biotechnology Information (NCBI). (s.f.). SARS-CoV-2 Data Hub. Recuperado el 19 de abril de 2023, de <https://www.ncbi.nlm.nih.gov/activ?lineage=B-1-1-529>
+
+Organización Mundial de la Salud (OMS). (2022, 25 de enero). Tracking SARS-CoV-2 variants. Recuperado el 19 de abril de 2023, de <https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/>
